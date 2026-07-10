@@ -1,26 +1,106 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f0e3;
+  --foreground: #0e2036;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Azul profundo — color primario de marca (navy editorial) */
+  --color-deep-50: #eef3fa;
+  --color-deep-100: #d6e2f2;
+  --color-deep-200: #adc5e5;
+  --color-deep-300: #7fa3d6;
+  --color-deep-400: #4d7cc0;
+  --color-deep-500: #2d5ba3;
+  --color-deep-600: #1d4480;
+  --color-deep-700: #17325a;
+  --color-deep-800: #0f2438;
+  --color-deep-900: #0e2036;
+  --color-deep-950: #081221;
+
+  /* Azul Caribe — color de acento para gráficas y detalles */
+  --color-caribe-50: #e8fbfb;
+  --color-caribe-100: #cdf5f6;
+  --color-caribe-200: #9de9ec;
+  --color-caribe-300: #66d8de;
+  --color-caribe-400: #35c1cb;
+  --color-caribe-500: #16a3b0;
+  --color-caribe-600: #0f8590;
+  --color-caribe-700: #106b75;
+  --color-caribe-800: #14555d;
+  --color-caribe-900: #14474e;
+  --color-caribe-950: #082a30;
+
+  /* Arena — fondos cálidos, tipo papel/crema editorial */
+  --color-arena-50: #f6f0e3;
+  --color-arena-100: #f1e7d2;
+  --color-arena-200: #e7d6b3;
+  --color-arena-300: #d8bf8b;
+  --color-arena-400: #c6a468;
+  --color-arena-500: #b3894c;
+  --color-arena-600: #966d38;
+  --color-arena-700: #78552f;
+  --color-arena-800: #5f452c;
+  --color-arena-900: #4e3a27;
+  --color-arena-950: #2a1e14;
+
+  /* Dorado suave — de tono cálido (CTA) a terracota (acentos/links) */
+  --color-dorado-50: #fdf8ee;
+  --color-dorado-100: #f8ecd3;
+  --color-dorado-200: #efd6a6;
+  --color-dorado-300: #e0b877;
+  --color-dorado-400: #cf9c54;
+  --color-dorado-500: #b97f3c;
+  --color-dorado-600: #9c632a;
+  --color-dorado-700: #7d4e23;
+  --color-dorado-800: #603c1d;
+  --color-dorado-900: #4a2f18;
+  --color-dorado-950: #2b1a0d;
+
+  /* Verde bosque — énfasis de utilidad/valores positivos */
+  --color-forest-50: #eaf3f0;
+  --color-forest-100: #cfe4db;
+  --color-forest-200: #a1c9b8;
+  --color-forest-300: #6fac93;
+  --color-forest-400: #3f8d70;
+  --color-forest-500: #1f5c4d;
+  --color-forest-600: #194a3f;
+  --color-forest-700: #143a32;
+
+  /* Semánticos para escenarios e indicadores */
+  --color-success-500: #1f5c4d;
+  --color-warning-500: #b97f3c;
+  --color-danger-500: #9c4a3c;
+
+  --shadow-soft: 0 2px 10px -2px rgb(14 32 54 / 0.06), 0 1px 3px -1px rgb(14 32 54 / 0.05);
+  --shadow-soft-lg: 0 8px 28px -8px rgb(14 32 54 / 0.12), 0 2px 8px -2px rgb(14 32 54 / 0.06);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+/* Utilidades de sombra suave (elevación editorial, apoyada en bordes finos) */
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+.shadow-soft-lg {
+  box-shadow: var(--shadow-soft-lg);
+}
+
+::selection {
+  background: var(--color-dorado-200);
+  color: var(--color-deep-900);
 }
