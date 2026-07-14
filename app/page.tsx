@@ -5,7 +5,6 @@ import { WhyInvest } from "@/components/WhyInvest";
 import { FinancialBreakdown } from "@/components/FinancialBreakdown";
 import { GEHSuitesFeeExplainer } from "@/components/GEHSuitesFeeExplainer";
 import { FAQ } from "@/components/FAQ";
-import { ContactForm } from "@/components/ContactForm";
 import { LegalNotice } from "@/components/LegalNotice";
 import { Footer } from "@/components/Footer";
 
@@ -20,7 +19,6 @@ export default function Home() {
         <FinancialBreakdown />
         <GEHSuitesFeeExplainer variant="full" />
         <FAQ />
-        <ContactForm />
         <LegalNotice />
       </main>
       <Footer />

@@ -15,7 +15,7 @@ const REASONS = [
     icon: Waves,
     title: "Ingresos diversificados",
     description:
-      "El proyecto no depende solo de habitaciones: rooftop, café y spa generan rentas complementarias fijas que estabilizan el flujo de caja mes a mes.",
+      "El proyecto no depende solo de habitaciones: café y spa generan rentas complementarias fijas que estabilizan el flujo de caja mes a mes.",
   },
   {
     icon: LineChart,

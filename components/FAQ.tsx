@@ -15,7 +15,7 @@ export function FAQ() {
       answer: (
         <>
           Lo mostramos con total transparencia: en el escenario Pesimista (50% de ocupación, ADR{" "}
-          {formatCurrencyCOP(490_000)}), el proyecto genera una utilidad neta de{" "}
+          {formatCurrencyCOP(500_000)}), el proyecto genera una utilidad neta de{" "}
           <span className="font-semibold text-danger-500">
             {formatCurrencyCOP(pesimista.utilidadNeta.mensual)}/mes
           </span>{" "}
@@ -27,7 +27,7 @@ export function FAQ() {
     {
       question: "¿Qué cubre el fee de GEHsuites?",
       answer:
-        "El fee fijo mensual cubre la operación integral del hotel: gestión de reservas, atención a huéspedes, coordinación de mantenimiento y estándar de marca. El fee variable escalonado (2%, 3% o 4% según el nivel de ingresos) alinea los incentivos de GEHsuites con el desempeño del proyecto: a mayor ingreso, mayor fee, pero también mayor utilidad para el inversionista.",
+        "El fee fijo mensual cubre la operación integral del hotel: gestión de reservas, atención a huéspedes, coordinación de mantenimiento y estándar de marca. El fee variable escalonado (3%, 4% o 5% según el nivel de ingresos) alinea los incentivos de GEHsuites con el desempeño del proyecto: a mayor ingreso, mayor fee, pero también mayor utilidad para el inversionista.",
     },
     {
       question: "¿Cómo se calcula el ROI?",

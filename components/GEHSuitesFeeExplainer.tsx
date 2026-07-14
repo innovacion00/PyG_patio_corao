@@ -70,13 +70,16 @@ export function GEHSuitesFeeExplainer({ activeBreakdown, variant = "full" }: GEH
   if (variant === "compact") return content;
 
   return (
-    <section id="comercializacion" className="mx-auto max-w-5xl px-4 sm:px-6 py-14 sm:py-20 flex flex-col gap-8">
-      <SectionHeading
-        eyebrow="Transparencia"
-        title="Modelo de comercialización GEHsuites"
-        description="GEHsuites opera y comercializa Patio Corao a cambio de un fee simple y predecible: un componente fijo mensual y uno variable que escala con los ingresos, alineando incentivos entre operador e inversionistas."
-      />
-      <div className="mx-auto w-full max-w-2xl">{content}</div>
+    <section id="comercializacion" className="bg-deep-950">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-14 sm:py-20 flex flex-col gap-8">
+        <SectionHeading
+          tone="dark"
+          eyebrow="Transparencia"
+          title="Modelo de comercialización GEHsuites"
+          description="GEHsuites opera y comercializa Patio Corao a cambio de un fee simple y predecible: un componente fijo mensual y uno variable que escala con los ingresos, alineando incentivos entre operador e inversionistas."
+        />
+        <div className="mx-auto w-full max-w-2xl">{content}</div>
+      </div>
     </section>
   );
 }

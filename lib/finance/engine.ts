@@ -1,4 +1,4 @@
-import type { FinancialBreakdown, InvestorResults, LineItem, ScenarioKey } from "../types";
+import type { FinancialBreakdown, InvestorResults, LineItem, LineOverrides, ScenarioKey } from "../types";
 import {
   DIAS_OPERATIVOS_MES,
   FEE_FIJO_GEH_MENSUAL,
@@ -166,6 +166,73 @@ export function buildCustomBreakdown(ocupacionPct: number, adr: number): Financi
 /** Devuelve el desglose oficial (no recalculado) para un escenario fijo. */
 export function getScenarioBreakdown(scenario: ScenarioKey): FinancialBreakdown {
   return FINANCIAL_BREAKDOWNS[scenario];
+}
+
+// ---------------------------------------------------------------------------
+// 7) Ajustes manuales de costos/gastos (tabla "Desglose del P&G — detalle
+//    completo"): activar/desactivar una línea o sobrescribir su % sobre
+//    ingresos totales, con recálculo en cascada de todos los subtotales.
+// ---------------------------------------------------------------------------
+function resolveLine(line: LineItem, overrides: LineOverrides, ingresosTotalMensual: number): LineItem {
+  const override = overrides[line.concepto];
+  if (!override) return line;
+  if (!override.enabled) return { ...line, mensual: 0, anual: 0 };
+  if (override.pctOverride !== null) {
+    const mensual = override.pctOverride * ingresosTotalMensual;
+    return { ...line, mensual, anual: mensual * 12 };
+  }
+  return line;
+}
+
+export function applyLineOverrides(breakdown: FinancialBreakdown, overrides: LineOverrides): FinancialBreakdown {
+  if (Object.keys(overrides).length === 0) return breakdown;
+
+  const ingresosTotalMensual = breakdown.ingresos.total.mensual;
+  const resolve = (line: LineItem) => resolveLine(line, overrides, ingresosTotalMensual);
+
+  const costosDirectosLineas = breakdown.costosDirectos.lineas.map(resolve);
+  const totalCostosDirectos = sumarLineas(costosDirectosLineas);
+
+  const gastosOperacionalesLineas = breakdown.gastosOperacionales.lineas.map(resolve);
+  const totalGastosOperacionales = sumarLineas(gastosOperacionalesLineas);
+
+  const utilidadBrutaMensual = ingresosTotalMensual - totalCostosDirectos;
+  const ebitdaMensual = utilidadBrutaMensual - totalGastosOperacionales;
+  const margenEbitdaPct = ingresosTotalMensual !== 0 ? ebitdaMensual / ingresosTotalMensual : 0;
+
+  const feeFijo = resolve(breakdown.feeGEH.fijo);
+  const feeVariable = resolve(breakdown.feeGEH.variable);
+  const totalFeeGEH = feeFijo.mensual + feeVariable.mensual;
+  const tasaTramoPct = ingresosTotalMensual !== 0 ? feeVariable.mensual / ingresosTotalMensual : 0;
+
+  const gastoFinanciero = resolve(breakdown.gastoFinanciero);
+
+  const utilidadNetaMensual = ebitdaMensual - gastoFinanciero.mensual - totalFeeGEH;
+  const margenNetoPct = ingresosTotalMensual !== 0 ? utilidadNetaMensual / ingresosTotalMensual : 0;
+
+  return {
+    ...breakdown,
+    costosDirectos: {
+      lineas: costosDirectosLineas,
+      total: anualizar(breakdown.costosDirectos.total.concepto, totalCostosDirectos),
+    },
+    utilidadBruta: anualizar(breakdown.utilidadBruta.concepto, utilidadBrutaMensual),
+    gastosOperacionales: {
+      lineas: gastosOperacionalesLineas,
+      total: anualizar(breakdown.gastosOperacionales.total.concepto, totalGastosOperacionales),
+    },
+    ebitda: anualizar(breakdown.ebitda.concepto, ebitdaMensual),
+    margenEbitdaPct,
+    gastoFinanciero,
+    feeGEH: {
+      fijo: feeFijo,
+      variable: feeVariable,
+      total: anualizar(breakdown.feeGEH.total.concepto, totalFeeGEH),
+      tasaTramoPct,
+    },
+    utilidadNeta: anualizar(breakdown.utilidadNeta.concepto, utilidadNetaMensual),
+    margenNetoPct,
+  };
 }
 
 // ---------------------------------------------------------------------------

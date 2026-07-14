@@ -14,7 +14,6 @@ export function Footer() {
           <a href="#desglose-financiero" className="hover:text-white transition">Desglose financiero</a>
           <a href="#comercializacion" className="hover:text-white transition">Comercialización</a>
           <a href="#faq" className="hover:text-white transition">FAQ</a>
-          <a href="#contacto" className="hover:text-white transition">Contacto</a>
         </nav>
         <p className="text-xs text-white/40">© {new Date().getFullYear()} GEHsuites. Todos los derechos reservados.</p>
       </div>

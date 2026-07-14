@@ -64,6 +64,16 @@ export interface FinancialBreakdown {
   margenNetoPct: number;
 }
 
+/** Ajuste manual de una línea de costo/gasto en la tabla "Desglose del P&G — detalle completo". */
+export interface LineOverride {
+  enabled: boolean;
+  /** % de los ingresos totales del escenario. `null` = usar el monto original del modelo. */
+  pctOverride: number | null;
+}
+
+/** Mapa de ajustes manuales, indexado por `concepto` de la línea. */
+export type LineOverrides = Record<string, LineOverride>;
+
 export interface SimulatorInputs {
   scenario: ScenarioKey;
   customMode: boolean;

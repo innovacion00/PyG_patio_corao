@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { SlidersHorizontal } from "lucide-react";
-import type { ScenarioKey, SimulatorInputs } from "@/lib/types";
+import type { LineOverrides, ScenarioKey, SimulatorInputs } from "@/lib/types";
 import { SCENARIOS } from "@/lib/finance/constants";
-import { buildCustomBreakdown, calcInvestorResults, getScenarioBreakdown } from "@/lib/finance/engine";
+import { applyLineOverrides, buildCustomBreakdown, calcInvestorResults, getScenarioBreakdown } from "@/lib/finance/engine";
 import { ScenarioSelector } from "./ScenarioSelector";
 import { CustomModeSliders } from "./CustomModeSliders";
 import { InvestmentInput } from "./InvestmentInput";
@@ -26,6 +26,7 @@ const DEFAULT_INPUTS: SimulatorInputs = {
 
 export function Simulator() {
   const [inputs, setInputs] = useState<SimulatorInputs>(DEFAULT_INPUTS);
+  const [lineOverrides, setLineOverrides] = useState<LineOverrides>({});
 
   const breakdown = useMemo(() => {
     if (inputs.customMode) {
@@ -34,10 +35,35 @@ export function Simulator() {
     return getScenarioBreakdown(inputs.scenario);
   }, [inputs.customMode, inputs.customOcupacionPct, inputs.customAdr, inputs.scenario]);
 
-  const investor = useMemo(
-    () => calcInvestorResults(breakdown, inputs.montoInvertido),
-    [breakdown, inputs.montoInvertido],
+  // Los ajustes manuales de costos/gastos parten de cero cada vez que cambia el
+  // escenario base (oficial o personalizado): no se mezclan entre escenarios.
+  useEffect(() => {
+    setLineOverrides({});
+  }, [breakdown]);
+
+  const effectiveBreakdown = useMemo(
+    () => applyLineOverrides(breakdown, lineOverrides),
+    [breakdown, lineOverrides],
   );
+
+  const investor = useMemo(
+    () => calcInvestorResults(effectiveBreakdown, inputs.montoInvertido),
+    [effectiveBreakdown, inputs.montoInvertido],
+  );
+
+  function toggleLine(concepto: string) {
+    setLineOverrides((prev) => {
+      const current = prev[concepto] ?? { enabled: true, pctOverride: null };
+      return { ...prev, [concepto]: { ...current, enabled: !current.enabled } };
+    });
+  }
+
+  function setLinePct(concepto: string, pct: number | null) {
+    setLineOverrides((prev) => {
+      const current = prev[concepto] ?? { enabled: true, pctOverride: null };
+      return { ...prev, [concepto]: { ...current, pctOverride: pct } };
+    });
+  }
 
   function updateScenario(scenario: ScenarioKey) {
     setInputs((prev) => ({ ...prev, scenario }));
@@ -125,7 +151,7 @@ export function Simulator() {
           className="lg:col-span-3 space-y-5"
         >
           <ResultsSummaryCard
-            breakdown={breakdown}
+            breakdown={effectiveBreakdown}
             investor={investor}
             montoInvertido={inputs.montoInvertido}
             horizonte={inputs.horizonte}
@@ -134,15 +160,19 @@ export function Simulator() {
           <div className="rounded-2xl border border-arena-200 bg-white p-5">
             <p className="font-display text-base font-bold text-deep-900">Desglose del P&amp;G — detalle completo</p>
             <p className="mb-4 text-xs text-deep-700/50">
-              Misma estructura que el Estado P&amp;G del modelo, línea por línea.
+              Misma estructura que el Estado P&amp;G del modelo, línea por línea. Activa o desactiva costos/gastos y
+              ajusta su % sobre ingresos para explorar variaciones sobre el escenario.
             </p>
             <DetailedPyGTable
-              breakdown={breakdown}
+              breakdown={effectiveBreakdown}
               scenarioLabel={inputs.customMode ? "Personalizado" : SCENARIOS[inputs.scenario].label}
+              overrides={lineOverrides}
+              onToggleLine={toggleLine}
+              onPctChange={setLinePct}
             />
           </div>
 
-          <GEHSuitesFeeExplainer activeBreakdown={breakdown} variant="compact" />
+          <GEHSuitesFeeExplainer activeBreakdown={effectiveBreakdown} variant="compact" />
         </motion.div>
       </div>
 

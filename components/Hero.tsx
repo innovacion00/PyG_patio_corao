@@ -32,7 +32,7 @@ export function Hero() {
           className="mt-4 max-w-xl text-base sm:text-lg text-white/70 text-pretty"
         >
           Proyecta tu utilidad neta estimada, mensual y anual, según cuánto inviertes en Patio Corao — un hotel
-          boutique operado por GEHsuites con ingresos por hospedaje, rooftop, café y spa.
+          boutique operado por GEHsuites con ingresos por hospedaje, café y spa.
         </motion.p>
 
         <motion.div
