@@ -148,7 +148,7 @@ export function Simulator() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="lg:col-span-3 space-y-5"
+          className="lg:col-span-3"
         >
           <ResultsSummaryCard
             breakdown={effectiveBreakdown}
@@ -156,25 +156,39 @@ export function Simulator() {
             montoInvertido={inputs.montoInvertido}
             horizonte={inputs.horizonte}
           />
-
-          <div className="rounded-2xl border border-arena-200 bg-white p-5">
-            <p className="font-display text-base font-bold text-deep-900">Desglose del P&amp;G — detalle completo</p>
-            <p className="mb-4 text-xs text-deep-700/50">
-              Misma estructura que el Estado P&amp;G del modelo, línea por línea. Activa o desactiva costos/gastos y
-              ajusta su % sobre ingresos para explorar variaciones sobre el escenario.
-            </p>
-            <DetailedPyGTable
-              breakdown={effectiveBreakdown}
-              scenarioLabel={inputs.customMode ? "Personalizado" : SCENARIOS[inputs.scenario].label}
-              overrides={lineOverrides}
-              onToggleLine={toggleLine}
-              onPctChange={setLinePct}
-            />
-          </div>
-
-          <GEHSuitesFeeExplainer activeBreakdown={effectiveBreakdown} variant="compact" />
         </motion.div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="mt-5 rounded-2xl border border-arena-200 bg-white p-5"
+      >
+        <p className="font-display text-base font-bold text-deep-900">Desglose del P&amp;G — detalle completo</p>
+        <p className="mb-4 text-xs text-deep-700/50">
+          Misma estructura que el Estado P&amp;G del modelo, línea por línea. Activa o desactiva costos/gastos y
+          ajusta su % sobre ingresos para explorar variaciones sobre el escenario.
+        </p>
+        <DetailedPyGTable
+          breakdown={effectiveBreakdown}
+          scenarioLabel={inputs.customMode ? "Personalizado" : SCENARIOS[inputs.scenario].label}
+          overrides={lineOverrides}
+          onToggleLine={toggleLine}
+          onPctChange={setLinePct}
+        />
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="mt-5"
+      >
+        <GEHSuitesFeeExplainer activeBreakdown={effectiveBreakdown} variant="compact" />
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 16 }}
