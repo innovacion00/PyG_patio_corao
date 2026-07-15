@@ -79,19 +79,5 @@ export interface SimulatorInputs {
   customMode: boolean;
   customOcupacionPct: number; // usado solo si customMode = true
   customAdr: number; // usado solo si customMode = true
-  montoInvertido: number;
   horizonte: "mensual" | "anual";
-}
-
-export interface InvestorResults {
-  participacionPct: number;
-  utilidadInversionistaMensual: number;
-  utilidadInversionistaAnual: number;
-  roiAnualPct: number; // siempre calculado sobre base anual
-  paybackAnios: number | null; // null si la utilidad anual es <= 0
-}
-
-export interface SimulatorResults {
-  breakdown: FinancialBreakdown;
-  investor: InvestorResults;
 }

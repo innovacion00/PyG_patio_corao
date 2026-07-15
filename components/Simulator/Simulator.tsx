@@ -5,10 +5,9 @@ import { motion } from "framer-motion";
 import { SlidersHorizontal } from "lucide-react";
 import type { LineOverrides, ScenarioKey, SimulatorInputs } from "@/lib/types";
 import { SCENARIOS } from "@/lib/finance/constants";
-import { applyLineOverrides, buildCustomBreakdown, calcInvestorResults, getScenarioBreakdown } from "@/lib/finance/engine";
+import { applyLineOverrides, buildCustomBreakdown, getScenarioBreakdown } from "@/lib/finance/engine";
 import { ScenarioSelector } from "./ScenarioSelector";
 import { CustomModeSliders } from "./CustomModeSliders";
-import { InvestmentInput } from "./InvestmentInput";
 import { ResultsSummaryCard } from "./ResultsSummaryCard";
 import { DetailedPyGTable } from "./DetailedPyGTable";
 import { ScenarioComparisonChart } from "./ScenarioComparisonChart";
@@ -20,7 +19,6 @@ const DEFAULT_INPUTS: SimulatorInputs = {
   customMode: false,
   customOcupacionPct: SCENARIOS.conservador.ocupacionPct,
   customAdr: SCENARIOS.conservador.adr,
-  montoInvertido: 100_000_000,
   horizonte: "anual",
 };
 
@@ -44,11 +42,6 @@ export function Simulator() {
   const effectiveBreakdown = useMemo(
     () => applyLineOverrides(breakdown, lineOverrides),
     [breakdown, lineOverrides],
-  );
-
-  const investor = useMemo(
-    () => calcInvestorResults(effectiveBreakdown, inputs.montoInvertido),
-    [effectiveBreakdown, inputs.montoInvertido],
   );
 
   function toggleLine(concepto: string) {
@@ -77,8 +70,7 @@ export function Simulator() {
           ¿Cuánto podrías ganar en Patio Corao?
         </h2>
         <p className="max-w-2xl text-sm sm:text-base text-deep-700/70">
-          Elige un escenario, define tu monto a invertir y descubre en tiempo real tu utilidad estimada, ROI y tiempo
-          de recuperación.
+          Elige un escenario y descubre en tiempo real la utilidad, el EBITDA y los márgenes estimados del hotel.
         </p>
       </div>
 
@@ -118,11 +110,6 @@ export function Simulator() {
             />
           )}
 
-          <InvestmentInput
-            value={inputs.montoInvertido}
-            onChange={(v) => setInputs((prev) => ({ ...prev, montoInvertido: v }))}
-          />
-
           <div>
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-deep-700/60">Horizonte</p>
             <div className="flex rounded-lg bg-arena-100 p-1">
@@ -150,12 +137,7 @@ export function Simulator() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="lg:col-span-3"
         >
-          <ResultsSummaryCard
-            breakdown={effectiveBreakdown}
-            investor={investor}
-            montoInvertido={inputs.montoInvertido}
-            horizonte={inputs.horizonte}
-          />
+          <ResultsSummaryCard breakdown={effectiveBreakdown} horizonte={inputs.horizonte} />
         </motion.div>
       </div>
 
@@ -202,10 +184,7 @@ export function Simulator() {
           Pesimista, conservador y optimista, con ADR y ocupación reales de cada uno — referencia de transparencia
           del modelo oficial.
         </p>
-        <ScenarioCompareCards
-          montoInvertido={inputs.montoInvertido}
-          activeScenario={inputs.customMode ? null : inputs.scenario}
-        />
+        <ScenarioCompareCards activeScenario={inputs.customMode ? null : inputs.scenario} />
       </motion.div>
 
       <motion.div

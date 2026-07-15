@@ -2,11 +2,10 @@
 
 import type { ScenarioKey } from "@/lib/types";
 import { SCENARIO_ORDER, SCENARIOS } from "@/lib/finance/constants";
-import { calcInvestorResults, getScenarioBreakdown } from "@/lib/finance/engine";
+import { getScenarioBreakdown } from "@/lib/finance/engine";
 import { formatCurrencyCOP, formatPercent } from "@/lib/finance/formatters";
 
 interface ScenarioCompareCardsProps {
-  montoInvertido: number;
   activeScenario: ScenarioKey | null;
 }
 
@@ -16,13 +15,12 @@ const DOT_COLOR: Record<ScenarioKey, string> = {
   optimista: "bg-forest-500",
 };
 
-export function ScenarioCompareCards({ montoInvertido, activeScenario }: ScenarioCompareCardsProps) {
+export function ScenarioCompareCards({ activeScenario }: ScenarioCompareCardsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {SCENARIO_ORDER.map((key) => {
         const scenario = SCENARIOS[key];
         const breakdown = getScenarioBreakdown(key);
-        const investor = calcInvestorResults(breakdown, montoInvertido);
         const isActive = activeScenario === key;
 
         return (
@@ -60,15 +58,15 @@ export function ScenarioCompareCards({ montoInvertido, activeScenario }: Scenari
 
             <div className="mt-4 border-t border-arena-200 pt-3 grid grid-cols-2 gap-2">
               <div>
-                <p className="text-xs text-deep-700/50">Tu ROI anual</p>
-                <p className={`text-base font-bold ${investor.roiAnualPct < 0 ? "text-danger-500" : "text-deep-900"}`}>
-                  {formatPercent(investor.roiAnualPct)}
+                <p className="text-xs text-deep-700/50">Margen EBITDA</p>
+                <p className={`text-base font-bold ${breakdown.margenEbitdaPct < 0 ? "text-danger-500" : "text-deep-900"}`}>
+                  {formatPercent(breakdown.margenEbitdaPct)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-deep-700/50">Tu utilidad (año)</p>
-                <p className={`text-base font-bold ${investor.utilidadInversionistaAnual < 0 ? "text-danger-500" : "text-deep-900"}`}>
-                  {formatCurrencyCOP(investor.utilidadInversionistaAnual)}
+                <p className="text-xs text-deep-700/50">Margen neto</p>
+                <p className={`text-base font-bold ${breakdown.margenNetoPct < 0 ? "text-danger-500" : "text-deep-900"}`}>
+                  {formatPercent(breakdown.margenNetoPct)}
                 </p>
               </div>
             </div>

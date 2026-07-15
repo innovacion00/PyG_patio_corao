@@ -30,11 +30,6 @@ export function FAQ() {
         "El fee fijo mensual cubre la operación integral del hotel: gestión de reservas, atención a huéspedes, coordinación de mantenimiento y estándar de marca. El fee variable escalonado (3%, 4% o 5% según el nivel de ingresos) alinea los incentivos de GEHsuites con el desempeño del proyecto: a mayor ingreso, mayor fee, pero también mayor utilidad para el inversionista.",
     },
     {
-      question: "¿Cómo se calcula el ROI?",
-      answer:
-        "El ROI anual se calcula dividiendo la utilidad neta que te corresponde según tu participación (monto invertido / valor total del proyecto) entre el monto que invertiste. El simulador lo recalcula en tiempo real según el escenario y el monto que elijas.",
-    },
-    {
       question: "¿Cuándo se distribuyen las utilidades?",
       answer:
         "Las utilidades se distribuyen conforme al calendario y política de distribución acordada en el vehículo de inversión del proyecto (mensual, trimestral o anual según se defina contractualmente). Este simulador estima la utilidad generada por el modelo operativo; la mecánica exacta de distribución se formaliza en el acuerdo de inversión.",

@@ -37,13 +37,6 @@ export const TRAMOS_FEE_VARIABLE = [
   { min: 140_000_001, max: 250_000_000, tasa: 0.05 },
 ] as const;
 
-/**
- * Valor total del proyecto / valuación usada para calcular la participación
- * pro-rata del inversionista. No viene en la hoja financiera original:
- * se expone aquí como parámetro fácilmente editable.
- */
-export const VALOR_TOTAL_PROYECTO = 3_000_000_000;
-
 // ---------------------------------------------------------------------------
 // Supuestos de cada escenario (% ocupación y ADR)
 // ---------------------------------------------------------------------------

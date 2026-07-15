@@ -1,4 +1,4 @@
-import type { FinancialBreakdown, InvestorResults, LineItem, LineOverrides, ScenarioKey } from "../types";
+import type { FinancialBreakdown, LineItem, LineOverrides, ScenarioKey } from "../types";
 import {
   DIAS_OPERATIVOS_MES,
   FEE_FIJO_GEH_MENSUAL,
@@ -8,7 +8,6 @@ import {
   INGRESO_SPA_MENSUAL,
   NUMERO_HABITACIONES,
   TRAMOS_FEE_VARIABLE,
-  VALOR_TOTAL_PROYECTO,
 } from "./constants";
 
 /**
@@ -232,30 +231,5 @@ export function applyLineOverrides(breakdown: FinancialBreakdown, overrides: Lin
     },
     utilidadNeta: anualizar(breakdown.utilidadNeta.concepto, utilidadNetaMensual),
     margenNetoPct,
-  };
-}
-
-// ---------------------------------------------------------------------------
-// 8) Rentabilidad del inversionista (pro-rata sobre el monto invertido)
-// ---------------------------------------------------------------------------
-export function participacionInversionista(montoInvertido: number, valorTotalProyecto: number = VALOR_TOTAL_PROYECTO): number {
-  if (valorTotalProyecto <= 0) return 0;
-  return montoInvertido / valorTotalProyecto;
-}
-
-export function calcInvestorResults(breakdown: FinancialBreakdown, montoInvertido: number): InvestorResults {
-  const participacionPct = participacionInversionista(montoInvertido);
-  const utilidadInversionistaAnual = breakdown.utilidadNeta.anual * participacionPct;
-  const utilidadInversionistaMensual = breakdown.utilidadNeta.mensual * participacionPct;
-
-  const roiAnualPct = montoInvertido > 0 ? utilidadInversionistaAnual / montoInvertido : 0;
-  const paybackAnios = utilidadInversionistaAnual > 0 ? montoInvertido / utilidadInversionistaAnual : null;
-
-  return {
-    participacionPct,
-    utilidadInversionistaMensual,
-    utilidadInversionistaAnual,
-    roiAnualPct,
-    paybackAnios,
   };
 }
