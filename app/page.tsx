@@ -7,6 +7,7 @@ import { GEHSuitesFeeExplainer } from "@/components/GEHSuitesFeeExplainer";
 import { FAQ } from "@/components/FAQ";
 import { LegalNotice } from "@/components/LegalNotice";
 import { Footer } from "@/components/Footer";
+import { FloatingLandingSwitch } from "@/components/FloatingLandingSwitch";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
         <LegalNotice />
       </main>
       <Footer />
+      <FloatingLandingSwitch />
     </div>
   );
 }
