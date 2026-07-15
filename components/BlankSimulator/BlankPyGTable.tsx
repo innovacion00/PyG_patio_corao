@@ -1,6 +1,7 @@
 "use client";
 
 import type { BlankBreakdown } from "@/lib/finance/blank/types";
+import { buildPyGRows } from "@/lib/finance/blank/pygRows";
 import { formatCurrencyCOP, formatNumber, formatPercent } from "@/lib/finance/formatters";
 
 interface BlankPyGTableProps {
@@ -8,60 +9,6 @@ interface BlankPyGTableProps {
   ocupacionPct: number;
   diasOperativosMes: number;
   adrPromedio: number;
-}
-
-type RowKind = "section" | "line" | "subtotal" | "percent";
-
-interface Row {
-  label: string;
-  kind: RowKind;
-  mensual?: number;
-  anual?: number;
-  isDeduction?: boolean;
-}
-
-function buildRows(breakdown: BlankBreakdown): Row[] {
-  return [
-    { label: breakdown.ingresos.total.concepto, kind: "subtotal", ...breakdown.ingresos.total },
-    { label: breakdown.ingresoHospedaje.concepto, kind: "line", ...breakdown.ingresoHospedaje },
-
-    { label: "COSTOS DIRECTOS", kind: "section" },
-    ...breakdown.costosDirectos.lineas.map(
-      (l): Row => ({ label: l.concepto, kind: "line", mensual: l.mensual, anual: l.anual, isDeduction: true }),
-    ),
-    { label: breakdown.costosDirectos.total.concepto, kind: "subtotal", ...breakdown.costosDirectos.total, isDeduction: true },
-
-    { label: "OTROS INGRESOS", kind: "section" },
-    ...breakdown.otrosIngresos.lineas.map((l): Row => ({ label: l.concepto, kind: "line", mensual: l.mensual, anual: l.anual })),
-    { label: breakdown.otrosIngresos.total.concepto, kind: "subtotal", ...breakdown.otrosIngresos.total },
-
-    { label: breakdown.utilidadBruta.concepto, kind: "subtotal", ...breakdown.utilidadBruta },
-
-    { label: "GASTOS OPERACIONALES", kind: "section" },
-    ...breakdown.gastosOperacionales.lineas.map(
-      (l): Row => ({ label: l.concepto, kind: "line", mensual: l.mensual, anual: l.anual, isDeduction: true }),
-    ),
-    {
-      label: breakdown.gastosOperacionales.total.concepto,
-      kind: "subtotal",
-      ...breakdown.gastosOperacionales.total,
-      isDeduction: true,
-    },
-
-    { label: breakdown.ebitda.concepto, kind: "subtotal", ...breakdown.ebitda },
-    { label: "Margen EBITDA", kind: "percent", mensual: breakdown.margenEbitdaPct, anual: breakdown.margenEbitdaPct },
-
-    { label: "GASTOS NO OPERACIONALES", kind: "section" },
-    { label: breakdown.gastoFinanciero.concepto, kind: "line", ...breakdown.gastoFinanciero, isDeduction: true },
-
-    { label: "COMERCIALIZACIÓN GEHSUITES", kind: "section" },
-    { label: breakdown.feeGEH.fijo.concepto, kind: "line", ...breakdown.feeGEH.fijo, isDeduction: true },
-    { label: breakdown.feeGEH.variable.concepto, kind: "line", ...breakdown.feeGEH.variable, isDeduction: true },
-    { label: breakdown.feeGEH.total.concepto, kind: "subtotal", ...breakdown.feeGEH.total, isDeduction: true },
-
-    { label: breakdown.utilidadNeta.concepto, kind: "subtotal", ...breakdown.utilidadNeta },
-    { label: "Margen Neto", kind: "percent", mensual: breakdown.margenNetoPct, anual: breakdown.margenNetoPct },
-  ];
 }
 
 function StatPill({ label, value }: { label: string; value: string }) {
@@ -74,7 +21,7 @@ function StatPill({ label, value }: { label: string; value: string }) {
 }
 
 export function BlankPyGTable({ breakdown, ocupacionPct, diasOperativosMes, adrPromedio }: BlankPyGTableProps) {
-  const rows = buildRows(breakdown);
+  const rows = buildPyGRows(breakdown);
 
   return (
     <div className="space-y-4">

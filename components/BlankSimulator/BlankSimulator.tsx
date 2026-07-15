@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { Download } from "lucide-react";
 import type { CostLine, FeeConfig, IncomeLine, RoomType } from "@/lib/finance/blank/types";
 import {
   DEFAULT_DIAS_OPERATIVOS_MES,
@@ -10,6 +11,7 @@ import {
   DEFAULT_ROOM_TYPES,
 } from "@/lib/finance/blank/constants";
 import { calcularADRPromedio, computeBlankBreakdown } from "@/lib/finance/blank/engine";
+import { loadBlankSimulatorState, saveBlankSimulatorState } from "@/lib/finance/blank/storage";
 import { RoomTypesEditor } from "./RoomTypesEditor";
 import { OcupacionScenarioSelector } from "./OcupacionScenarioSelector";
 import { IncomeLinesEditor } from "./IncomeLinesEditor";
@@ -29,6 +31,52 @@ export function BlankSimulator() {
   const [feeConfig, setFeeConfig] = useState<FeeConfig>(DEFAULT_FEE_CONFIG);
   const [gastoFinancieroMensual, setGastoFinancieroMensual] = useState(0);
   const [horizonte, setHorizonte] = useState<"mensual" | "anual">("anual");
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+
+  const hasHydrated = useRef(false);
+
+  // Al montar: restaura la última configuración guardada en este navegador, si existe.
+  useEffect(() => {
+    const saved = loadBlankSimulatorState();
+    if (saved) {
+      setRooms(saved.rooms);
+      setOcupacionPct(saved.ocupacionPct);
+      setDiasOperativosMes(saved.diasOperativosMes);
+      setOtrosIngresos(saved.otrosIngresos);
+      setCostosDirectos(saved.costosDirectos);
+      setGastosOperacionales(saved.gastosOperacionales);
+      setFeeConfig(saved.feeConfig);
+      setGastoFinancieroMensual(saved.gastoFinancieroMensual);
+      setHorizonte(saved.horizonte);
+    }
+    hasHydrated.current = true;
+  }, []);
+
+  // Guarda automáticamente cada cambio, una vez restaurado el estado inicial.
+  useEffect(() => {
+    if (!hasHydrated.current) return;
+    saveBlankSimulatorState({
+      rooms,
+      ocupacionPct,
+      diasOperativosMes,
+      otrosIngresos,
+      costosDirectos,
+      gastosOperacionales,
+      feeConfig,
+      gastoFinancieroMensual,
+      horizonte,
+    });
+  }, [
+    rooms,
+    ocupacionPct,
+    diasOperativosMes,
+    otrosIngresos,
+    costosDirectos,
+    gastosOperacionales,
+    feeConfig,
+    gastoFinancieroMensual,
+    horizonte,
+  ]);
 
   const breakdown = useMemo(
     () =>
@@ -56,6 +104,16 @@ export function BlankSimulator() {
 
   const adrPromedio = useMemo(() => calcularADRPromedio(rooms), [rooms]);
 
+  async function handleExportPdf() {
+    setIsExportingPdf(true);
+    try {
+      const { exportPyGToPdf } = await import("@/lib/finance/blank/pdf");
+      exportPyGToPdf({ breakdown, ocupacionPct, diasOperativosMes, adrPromedio });
+    } finally {
+      setIsExportingPdf(false);
+    }
+  }
+
   return (
     <section id="simulador" className="mx-auto max-w-6xl px-4 sm:px-6 py-14 sm:py-20 scroll-mt-20">
       <div className="flex flex-col gap-2 mb-8">
@@ -66,6 +124,9 @@ export function BlankSimulator() {
         <p className="max-w-2xl text-sm sm:text-base text-deep-700/70">
           Define tus tipos de habitación, su cantidad y ADR, ajusta la ocupación y los costos, y descubre en tiempo
           real la utilidad, el EBITDA y los márgenes estimados.
+        </p>
+        <p className="text-xs text-deep-700/40">
+          Tu configuración se guarda automáticamente en este navegador — al volver la encontrarás tal como la dejaste.
         </p>
       </div>
 
@@ -189,10 +250,23 @@ export function BlankSimulator() {
         transition={{ duration: 0.5 }}
         className="mt-5 rounded-2xl border border-arena-200 bg-white p-5"
       >
-        <p className="font-display text-base font-bold text-deep-900">P&amp;G resultante</p>
-        <p className="mb-4 text-xs text-deep-700/50">
-          Se recalcula en tiempo real a partir de tus tipos de habitación, ocupación y líneas de costo/gasto.
-        </p>
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="font-display text-base font-bold text-deep-900">P&amp;G resultante</p>
+            <p className="text-xs text-deep-700/50">
+              Se recalcula en tiempo real a partir de tus tipos de habitación, ocupación y líneas de costo/gasto.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleExportPdf}
+            disabled={isExportingPdf}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-deep-900 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-deep-800 disabled:opacity-50"
+          >
+            <Download className="h-3.5 w-3.5" />
+            {isExportingPdf ? "Generando..." : "Descargar PDF"}
+          </button>
+        </div>
         <BlankPyGTable
           breakdown={breakdown}
           ocupacionPct={ocupacionPct}
