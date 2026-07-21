@@ -8,7 +8,7 @@ export function FooterV2() {
           <Image src="/geh-logo-full.png" alt="GEHsuites" width={1046} height={329} className="h-7 w-auto" />
         </div>
         <nav className="flex flex-wrap gap-x-5 gap-y-1.5 text-xs">
-          <a href="#simulador" className="hover:text-white transition">Simulador</a>
+          <a href="#simulador" className="hover:text-white transition">simulador</a>
         </nav>
         <p className="text-xs text-arena-100/50">© {new Date().getFullYear()} GEHsuites. Todos los derechos reservados.</p>
       </div>
