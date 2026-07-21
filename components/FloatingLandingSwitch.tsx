@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { ArrowLeftRight } from "lucide-react";
 
 const LANDINGS: Record<string, { href: string; label: string }> = {
-  "/": { href: "/v2", label: "Ver otro diseño" },
-  "/v2": { href: "/", label: "Ver diseño original" },
+  "/": { href: "/v2", label: "Ver diseño original" },
+  "/v2": { href: "/", label: "Ver otro diseño" },
 };
 
 export function FloatingLandingSwitch() {

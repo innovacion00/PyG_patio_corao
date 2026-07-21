@@ -1,25 +1,28 @@
-import type { Metadata } from "next";
-import { HeaderV2 } from "@/components/v2/HeaderV2";
-import { HeroV2 } from "@/components/v2/HeroV2";
-import { BlankSimulator } from "@/components/BlankSimulator/BlankSimulator";
-import { FooterV2 } from "@/components/v2/FooterV2";
+import { Header } from "@/components/Header";
+import { Hero } from "@/components/Hero";
+import { Simulator } from "@/components/Simulator/Simulator";
+import { WhyInvest } from "@/components/WhyInvest";
+import { FinancialBreakdown } from "@/components/FinancialBreakdown";
+import { GEHSuitesFeeExplainer } from "@/components/GEHSuitesFeeExplainer";
+import { FAQ } from "@/components/FAQ";
+import { LegalNotice } from "@/components/LegalNotice";
+import { Footer } from "@/components/Footer";
 import { FloatingLandingSwitch } from "@/components/FloatingLandingSwitch";
-
-export const metadata: Metadata = {
-  title: "GEHsuites | Simulador de Rentabilidad Hotelera",
-  description:
-    "Arma tu propio modelo de rentabilidad hotelera: define tipos de habitación, cantidad y ADR, y descubre en segundos la utilidad y márgenes estimados.",
-};
 
 export default function LandingV2() {
   return (
     <div className="flex flex-col flex-1">
-      <HeaderV2 />
+      <Header />
       <main className="flex flex-col flex-1">
-        <HeroV2 />
-        <BlankSimulator />
+        <Hero />
+        <Simulator />
+        <WhyInvest />
+        <FinancialBreakdown />
+        <GEHSuitesFeeExplainer variant="full" />
+        <FAQ />
+        <LegalNotice />
       </main>
-      <FooterV2 />
+      <Footer />
       <FloatingLandingSwitch />
     </div>
   );
