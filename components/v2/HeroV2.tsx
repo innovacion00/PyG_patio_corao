@@ -38,7 +38,7 @@ export function HeroV2() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-5 max-w-lg text-base sm:text-lg text-deep-700/70 text-pretty"
           >
-            Una plantilla en blanco de GEHsuites: crea tus propios tipos de habitación, asígnales cantidad y ADR, y
+            Una plantilla de GEHsuites: crea tus propios tipos de habitación, asígnales cantidad y ADR, y
             proyecta la utilidad neta estimada según tus supuestos de ocupación y costos.
           </motion.p>
 
