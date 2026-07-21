@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 import { Download } from "lucide-react";
 import type { CostLine, FeeConfig, IncomeLine, RoomType } from "@/lib/finance/blank/types";
 import {
+  DEFAULT_COSTOS_DIRECTOS,
   DEFAULT_DIAS_OPERATIVOS_MES,
   DEFAULT_FEE_CONFIG,
+  DEFAULT_GASTOS_OPERACIONALES,
   DEFAULT_OCUPACION_PCT,
   DEFAULT_ROOM_TYPES,
 } from "@/lib/finance/blank/constants";
@@ -26,8 +28,8 @@ export function BlankSimulator() {
   const [ocupacionPct, setOcupacionPct] = useState(DEFAULT_OCUPACION_PCT);
   const [diasOperativosMes, setDiasOperativosMes] = useState(DEFAULT_DIAS_OPERATIVOS_MES);
   const [otrosIngresos, setOtrosIngresos] = useState<IncomeLine[]>([]);
-  const [costosDirectos, setCostosDirectos] = useState<CostLine[]>([]);
-  const [gastosOperacionales, setGastosOperacionales] = useState<CostLine[]>([]);
+  const [costosDirectos, setCostosDirectos] = useState<CostLine[]>(DEFAULT_COSTOS_DIRECTOS);
+  const [gastosOperacionales, setGastosOperacionales] = useState<CostLine[]>(DEFAULT_GASTOS_OPERACIONALES);
   const [feeConfig, setFeeConfig] = useState<FeeConfig>(DEFAULT_FEE_CONFIG);
   const [gastoFinancieroMensual, setGastoFinancieroMensual] = useState(0);
   const [horizonte, setHorizonte] = useState<"mensual" | "anual">("anual");
@@ -43,8 +45,10 @@ export function BlankSimulator() {
       setOcupacionPct(saved.ocupacionPct);
       setDiasOperativosMes(saved.diasOperativosMes);
       setOtrosIngresos(saved.otrosIngresos);
-      setCostosDirectos(saved.costosDirectos);
-      setGastosOperacionales(saved.gastosOperacionales);
+      setCostosDirectos(saved.costosDirectos.length > 0 ? saved.costosDirectos : DEFAULT_COSTOS_DIRECTOS);
+      setGastosOperacionales(
+        saved.gastosOperacionales.length > 0 ? saved.gastosOperacionales : DEFAULT_GASTOS_OPERACIONALES,
+      );
       setFeeConfig(saved.feeConfig);
       setGastoFinancieroMensual(saved.gastoFinancieroMensual);
       setHorizonte(saved.horizonte);
