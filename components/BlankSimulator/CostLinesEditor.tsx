@@ -30,7 +30,7 @@ export function CostLinesEditor({
   function addLine() {
     onChange([
       ...lines,
-      { id: createId(idPrefix), concepto: "Nueva línea", modo: "porcentaje", montoFijo: 0, pctSobreIngresos: 0 },
+      { id: createId(idPrefix), concepto: "Nueva línea", modo: "porcentaje", montoFijo: 0, pctSobreIngresos: 0, activo: true },
     ]);
   }
 

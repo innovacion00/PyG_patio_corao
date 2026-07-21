@@ -23,6 +23,11 @@ import { BlankResultsSummary } from "./BlankResultsSummary";
 import { BlankPyGTable } from "./BlankPyGTable";
 import { formatPercent } from "@/lib/finance/formatters";
 
+/** Compatibilidad hacia atrás: configuraciones guardadas antes de existir el campo `activo`. */
+function conActivoPorDefecto<T extends { activo?: boolean }>(lineas: T[]): (T & { activo: boolean })[] {
+  return lineas.map((linea) => ({ ...linea, activo: linea.activo ?? true }));
+}
+
 export function BlankSimulator() {
   const [rooms, setRooms] = useState<RoomType[]>(DEFAULT_ROOM_TYPES);
   const [ocupacionPct, setOcupacionPct] = useState(DEFAULT_OCUPACION_PCT);
@@ -44,10 +49,14 @@ export function BlankSimulator() {
       setRooms(saved.rooms);
       setOcupacionPct(saved.ocupacionPct);
       setDiasOperativosMes(saved.diasOperativosMes);
-      setOtrosIngresos(saved.otrosIngresos);
-      setCostosDirectos(saved.costosDirectos.length > 0 ? saved.costosDirectos : DEFAULT_COSTOS_DIRECTOS);
+      setOtrosIngresos(conActivoPorDefecto(saved.otrosIngresos));
+      setCostosDirectos(
+        saved.costosDirectos.length > 0 ? conActivoPorDefecto(saved.costosDirectos) : DEFAULT_COSTOS_DIRECTOS,
+      );
       setGastosOperacionales(
-        saved.gastosOperacionales.length > 0 ? saved.gastosOperacionales : DEFAULT_GASTOS_OPERACIONALES,
+        saved.gastosOperacionales.length > 0
+          ? conActivoPorDefecto(saved.gastosOperacionales)
+          : DEFAULT_GASTOS_OPERACIONALES,
       );
       setFeeConfig(saved.feeConfig);
       setGastoFinancieroMensual(saved.gastoFinancieroMensual);
@@ -107,6 +116,23 @@ export function BlankSimulator() {
   );
 
   const adrPromedio = useMemo(() => calcularADRPromedio(rooms), [rooms]);
+
+  /** Activa/desactiva una línea (costo directo, gasto operacional u otro ingreso) desde la tabla del PyG. */
+  function handleToggleLine(id: string) {
+    const toggle = (lineas: { id: string; activo: boolean }[]) =>
+      lineas.map((linea) => (linea.id === id ? { ...linea, activo: !linea.activo } : linea));
+    setCostosDirectos((prev) => toggle(prev) as CostLine[]);
+    setGastosOperacionales((prev) => toggle(prev) as CostLine[]);
+    setOtrosIngresos((prev) => toggle(prev) as IncomeLine[]);
+  }
+
+  /** Edita el % sobre ingresos de un costo directo o gasto operacional desde la tabla del PyG. */
+  function handleEditPct(id: string, pct: number) {
+    const editar = (lineas: CostLine[]) =>
+      lineas.map((linea) => (linea.id === id ? { ...linea, modo: "porcentaje" as const, pctSobreIngresos: pct } : linea));
+    setCostosDirectos((prev) => editar(prev));
+    setGastosOperacionales((prev) => editar(prev));
+  }
 
   async function handleExportPdf() {
     setIsExportingPdf(true);
@@ -276,6 +302,8 @@ export function BlankSimulator() {
           ocupacionPct={ocupacionPct}
           diasOperativosMes={diasOperativosMes}
           adrPromedio={adrPromedio}
+          onToggleLine={handleToggleLine}
+          onEditPct={handleEditPct}
         />
       </motion.div>
 

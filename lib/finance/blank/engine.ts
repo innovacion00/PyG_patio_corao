@@ -1,5 +1,14 @@
 import type { LineItem } from "@/lib/types";
-import type { BlankBreakdown, CostLine, FeeConfig, FeeTramo, IncomeLine, RoomType } from "./types";
+import type {
+  BlankBreakdown,
+  CostLine,
+  CostToggleableLineItem,
+  FeeConfig,
+  FeeTramo,
+  IncomeLine,
+  RoomType,
+  ToggleableLineItem,
+} from "./types";
 
 /**
  * Motor de cálculo del simulador en blanco GEHsuites — funciones puras, sin
@@ -12,8 +21,9 @@ function anualizar(concepto: string, mensual: number): LineItem {
   return { concepto, mensual, anual: mensual * 12 };
 }
 
-function sumar(lineas: LineItem[]): number {
-  return lineas.reduce((acc, linea) => acc + linea.mensual, 0);
+/** Suma solo las líneas activas — las desactivadas se conservan en la tabla pero no afectan el PyG. */
+function sumarActivas(lineas: ToggleableLineItem[]): number {
+  return lineas.reduce((acc, linea) => acc + (linea.activo ? linea.mensual : 0), 0);
 }
 
 export function calcularIngresoHospedajeMensual(
@@ -45,15 +55,23 @@ function tasaTramoFeeVariable(ingresosMes: number, tramos: FeeTramo[]): number {
   return 0;
 }
 
-function lineasDesdeCostLines(costLines: CostLine[], ingresosBaseMensual: number): LineItem[] {
+function lineasDesdeCostLines(costLines: CostLine[], ingresosBaseMensual: number): CostToggleableLineItem[] {
   return costLines.map((linea) => {
     const mensual = linea.modo === "fijo" ? linea.montoFijo : linea.pctSobreIngresos * ingresosBaseMensual;
-    return { concepto: linea.concepto, mensual, anual: mensual * 12 };
+    return {
+      id: linea.id,
+      concepto: linea.concepto,
+      mensual,
+      anual: mensual * 12,
+      activo: linea.activo,
+      modo: linea.modo,
+      pctSobreIngresos: linea.pctSobreIngresos,
+    };
   });
 }
 
-function lineasDesdeIncomeLines(incomeLines: IncomeLine[]): LineItem[] {
-  return incomeLines.map((linea) => anualizar(linea.concepto, linea.montoMensual));
+function lineasDesdeIncomeLines(incomeLines: IncomeLine[]): ToggleableLineItem[] {
+  return incomeLines.map((linea) => ({ id: linea.id, ...anualizar(linea.concepto, linea.montoMensual), activo: linea.activo }));
 }
 
 interface ComputeBlankBreakdownParams {
@@ -83,13 +101,13 @@ export function computeBlankBreakdown(params: ComputeBlankBreakdownParams): Blan
   const roomNochesMensual = calcularRoomNochesMensual(rooms, ocupacionPct, diasOperativosMes);
 
   const otrosIngresosLineas = lineasDesdeIncomeLines(otrosIngresos);
-  const totalOtrosIngresosMensual = sumar(otrosIngresosLineas);
+  const totalOtrosIngresosMensual = sumarActivas(otrosIngresosLineas);
 
   // Costos Directos y Gastos Operacionales se calculan (en modo "%") solo sobre
   // el ingreso por hospedaje: Otros Ingresos es un rubro aparte que se suma
   // después de Costos Directos, no una base para calcular costos/gastos.
   const costosDirectosLineas = lineasDesdeCostLines(costosDirectos, ingresoHospedajeMensual);
-  const totalCostosDirectosMensual = sumar(costosDirectosLineas);
+  const totalCostosDirectosMensual = sumarActivas(costosDirectosLineas);
 
   // Otros Ingresos se suma justo después de Costos Directos para llegar a la Utilidad Bruta.
   const utilidadBrutaMensual = ingresoHospedajeMensual - totalCostosDirectosMensual + totalOtrosIngresosMensual;
@@ -97,7 +115,7 @@ export function computeBlankBreakdown(params: ComputeBlankBreakdownParams): Blan
   const ingresosTotalesMensual = ingresoHospedajeMensual + totalOtrosIngresosMensual;
 
   const gastosOperacionalesLineas = lineasDesdeCostLines(gastosOperacionales, ingresoHospedajeMensual);
-  const totalGastosOperacionalesMensual = sumar(gastosOperacionalesLineas);
+  const totalGastosOperacionalesMensual = sumarActivas(gastosOperacionalesLineas);
 
   const ebitdaMensual = utilidadBrutaMensual - totalGastosOperacionalesMensual;
   const margenEbitdaPct = ingresosTotalesMensual !== 0 ? ebitdaMensual / ingresosTotalesMensual : 0;

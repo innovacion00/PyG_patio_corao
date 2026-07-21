@@ -41,28 +41,38 @@ export function exportPyGToPdf({ breakdown, ocupacionPct, diasOperativosMes, adr
 
   const body = rows.map((row) => {
     if (row.kind === "section") {
-      return [{ content: row.label, colSpan: 3 }];
+      return [{ content: row.label, colSpan: 5 }];
     }
     if (row.kind === "percent") {
-      return [row.label, "", formatPercent(row.mensual ?? 0)];
+      return [row.label, "", "", formatPercent(row.mensual ?? 0), ""];
     }
     const mensual = row.mensual ?? 0;
     const anual = row.anual ?? 0;
     const showMinus = row.isDeduction || mensual < 0;
     const sign = showMinus ? "−" : "";
-    return [row.label, `${sign}${formatCurrencyCOP(Math.abs(mensual))}`, `${sign}${formatCurrencyCOP(Math.abs(anual))}`];
+    const pct = row.pctSobreIngresos !== undefined ? row.pctSobreIngresos : (row.pctIngresos ?? 0);
+    const pctSign = showMinus && pct > 0 && row.pctSobreIngresos === undefined ? "−" : "";
+    return [
+      row.label,
+      `${sign}${formatCurrencyCOP(Math.abs(mensual))}`,
+      `${sign}${formatCurrencyCOP(Math.abs(anual))}`,
+      `${pctSign}${formatPercent(Math.abs(pct))}`,
+      row.id ? (row.activo ?? true ? "Sí" : "No") : "",
+    ];
   });
 
   autoTable(doc, {
     startY: 40,
-    head: [["Concepto", "Mensual", "Anual"]],
+    head: [["Concepto", "Mensual", "Anual", "%", "Activo"]],
     body,
     styles: { fontSize: 8, cellPadding: 2.2, textColor: [30, 30, 30] },
     headStyles: { fillColor: DEEP_900, textColor: 255, fontStyle: "bold" },
     columnStyles: {
       0: { cellWidth: "auto" },
-      1: { halign: "right", cellWidth: 40 },
-      2: { halign: "right", cellWidth: 40 },
+      1: { halign: "right", cellWidth: 34 },
+      2: { halign: "right", cellWidth: 34 },
+      3: { halign: "right", cellWidth: 22 },
+      4: { halign: "center", cellWidth: 18 },
     },
     didParseCell: (data) => {
       const row = rows[data.row.index];
@@ -74,12 +84,12 @@ export function exportPyGToPdf({ breakdown, ocupacionPct, diasOperativosMes, adr
       } else if (row.kind === "subtotal") {
         data.cell.styles.fillColor = [250, 247, 240];
         data.cell.styles.fontStyle = "bold";
-      } else if (row.kind === "percent" && data.column.index === 2) {
+      } else if (row.kind === "percent" && data.column.index === 3) {
         data.cell.styles.fontStyle = "bold";
-      } else if (row.isDeduction && data.column.index > 0) {
+      } else if (row.isDeduction && data.column.index > 0 && data.column.index < 4) {
         data.cell.styles.textColor = DORADO_700;
       }
-      if ((row.mensual ?? 0) < 0 && data.column.index > 0) {
+      if ((row.mensual ?? 0) < 0 && data.column.index > 0 && data.column.index < 4) {
         data.cell.styles.textColor = DANGER_500;
       }
     },

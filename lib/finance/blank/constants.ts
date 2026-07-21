@@ -36,6 +36,7 @@ export const DEFAULT_COSTOS_DIRECTOS: CostLine[] = DEFAULT_COSTOS_DIRECTOS_CONCE
   modo: "porcentaje",
   montoFijo: 0,
   pctSobreIngresos: 0,
+  activo: true,
 }));
 
 /** Conceptos de gasto operacional más comunes en la operación de un hostal/hospedaje — el usuario ajusta cada monto/%. */
@@ -57,6 +58,7 @@ export const DEFAULT_GASTOS_OPERACIONALES: CostLine[] = DEFAULT_GASTOS_OPERACION
   modo: "porcentaje",
   montoFijo: 0,
   pctSobreIngresos: 0,
+  activo: true,
 }));
 
 /** Valores de partida basados en las condiciones comerciales vigentes de GEHsuites — editables por proyecto. */

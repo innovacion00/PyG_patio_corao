@@ -15,7 +15,7 @@ export function IncomeLinesEditor({ lines, onChange }: IncomeLinesEditorProps) {
   }
 
   function addLine() {
-    onChange([...lines, { id: createId("ingreso"), concepto: "Nuevo ingreso", montoMensual: 0 }]);
+    onChange([...lines, { id: createId("ingreso"), concepto: "Nuevo ingreso", montoMensual: 0, activo: true }]);
   }
 
   function removeLine(id: string) {

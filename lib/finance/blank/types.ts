@@ -26,6 +26,8 @@ export interface CostLine {
   modo: CostLineModo;
   montoFijo: number; // COP mensual, usado si modo === "fijo"
   pctSobreIngresos: number; // 0-1, usado si modo === "porcentaje"
+  /** Si es false, la línea se excluye del cálculo del PyG pero se conserva para reactivarla luego. */
+  activo: boolean;
 }
 
 /** Línea de ingreso adicional (renta complementaria, arriendo fijo, etc.), como monto fijo mensual. */
@@ -33,6 +35,20 @@ export interface IncomeLine {
   id: string;
   concepto: string;
   montoMensual: number;
+  /** Si es false, la línea se excluye del cálculo del PyG pero se conserva para reactivarla luego. */
+  activo: boolean;
+}
+
+/** Línea del PyG con id/activo trazables hasta un CostLine o IncomeLine, para el toggle de la tabla resultante. */
+export interface ToggleableLineItem extends LineItem {
+  id: string;
+  activo: boolean;
+}
+
+/** Línea de costo/gasto en el PyG: además del monto, conserva el modo y % para poder editarse desde la tabla resultante. */
+export interface CostToggleableLineItem extends ToggleableLineItem {
+  modo: CostLineModo;
+  pctSobreIngresos: number;
 }
 
 export interface FeeTramo {
@@ -49,11 +65,11 @@ export interface FeeConfig {
 export interface BlankBreakdown {
   roomNoches: LineItem;
   ingresoHospedaje: LineItem;
-  otrosIngresos: { lineas: LineItem[]; total: LineItem };
+  otrosIngresos: { lineas: ToggleableLineItem[]; total: LineItem };
   ingresos: { total: LineItem };
-  costosDirectos: { lineas: LineItem[]; total: LineItem };
+  costosDirectos: { lineas: CostToggleableLineItem[]; total: LineItem };
   utilidadBruta: LineItem;
-  gastosOperacionales: { lineas: LineItem[]; total: LineItem };
+  gastosOperacionales: { lineas: CostToggleableLineItem[]; total: LineItem };
   ebitda: LineItem;
   margenEbitdaPct: number;
   gastoFinanciero: LineItem;
